@@ -22,14 +22,14 @@ jobs:
         run: python scripts/bump_version ${{ github.ref_name }}
 
       - name: Create zip package
-        working-directory: custom_components/template-media-player
+        working-directory: custom_components/template_media_player
         run: zip -r template-media-player.zip .
 
       - name: Upload zip to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: custom_components/template-media-player/template-media-player.zip
+          file: custom_components/template_media_player/template-media-player.zip
           asset_name: template-media-player.zip
           tag: ${{ github.ref }}
           overwrite: true

@@ -63,12 +63,17 @@ resource "github_repository_ruleset" "master" {
 
     required_status_checks {
       required_check {
-        context        = "lint"
+        context        = "Lint"
         integration_id = var.github_actions_app_id
       }
 
       required_check {
-        context        = "validate"
+        context        = "HACS Validation"
+        integration_id = var.github_actions_app_id
+      }
+
+      required_check {
+        context        = "Hassfest Validation"
         integration_id = var.github_actions_app_id
       }
     }

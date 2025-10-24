@@ -1,0 +1,6 @@
+[tools]
+terraform = "latest"
+uv = "latest"
+
+[env]
+'_'.file.path = ".env"

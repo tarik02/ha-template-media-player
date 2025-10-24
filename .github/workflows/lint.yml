@@ -1,0 +1,22 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Setup Mise
+        uses: jdx/mise-action@v3
+
+      - name: Install Dependencies
+        run: uv sync --locked --all-extras --dev
+
+      - name: Run Linter
+        run: uv run ruff check

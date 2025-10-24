@@ -1,0 +1,16 @@
+{
+  "domain": "template_media_player",
+  "name": "Template Media Player",
+  "after_dependencies": [
+    "template"
+  ],
+  "codeowners": [
+    "@tarik02"
+  ],
+  "dependencies": [],
+  "documentation": "https://github.com/tarik02/ha-template-media-player",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/tarik02/ha-template-media-player/issues",
+  "requirements": [],
+  "version": "0.0.0-unreleased"
+}

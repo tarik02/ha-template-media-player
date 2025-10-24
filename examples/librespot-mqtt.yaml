@@ -1,0 +1,222 @@
+mqtt:
+  - sensor:
+      name: "librespot player1 state"
+      state_topic: "librespot/player1/state"
+      unique_id: librespot_player1_state
+      object_id: librespot_player1_state
+      expire_after: 5
+  - sensor:
+      name: "librespot player1 uri"
+      state_topic: "librespot/player1/state/uri"
+      unique_id: librespot_player1_uri
+      object_id: librespot_player1_uri
+  - sensor:
+      name: "librespot player1 play origin"
+      state_topic: "librespot/player1/state/play_origin"
+      unique_id: librespot_player1_play_origin
+      object_id: librespot_player1_play_origin
+  - sensor:
+      name: "librespot player1 track"
+      state_topic: "librespot/player1/state/track"
+      value_template: "{{ value_json.name }}"
+      json_attributes_topic: "librespot/player1/state/track"
+      unique_id: librespot_player1_track
+      object_id: librespot_player1_track
+  - sensor:
+      name: "librespot player1 since"
+      state_topic: "librespot/player1/state/since"
+      unique_id: librespot_player1_since
+      object_id: librespot_player1_since
+  - sensor:
+      name: "librespot player1 position"
+      state_topic: "librespot/player1/state/position"
+      unique_id: librespot_player1_position
+      object_id: librespot_player1_position
+  - sensor:
+      name: "librespot player1 position updated_at"
+      state_topic: "librespot/player1/state/position/updated_at"
+      unique_id: librespot_player1_position_updated_at
+      object_id: librespot_player1_position_updated_at
+  - sensor:
+      name: "librespot player1 volume"
+      state_topic: "librespot/player1/state/volume"
+      unique_id: librespot_player1_volume
+      object_id: librespot_player1_volume
+  - sensor:
+      name: "librespot player1 volume steps"
+      state_topic: "librespot/player1/state/volume/steps"
+      unique_id: librespot_player1_volume_steps
+      object_id: librespot_player1_volume_steps
+  - sensor:
+      name: "librespot player1 shuffle context"
+      state_topic: "librespot/player1/state/shuffle/context"
+      unique_id: librespot_player1_shuffle_context
+      object_id: librespot_player1_shuffle_context
+  - sensor:
+      name: "librespot player1 repeat context"
+      state_topic: "librespot/player1/state/repeat/context"
+      unique_id: librespot_player1_repeat_context
+      object_id: librespot_player1_repeat_context
+  - sensor:
+      name: "librespot player1 repeat track"
+      state_topic: "librespot/player1/state/repeat/track"
+      unique_id: librespot_player1_repeat_track
+      object_id: librespot_player1_repeat_track
+
+script librespot_player1_set_repeat:
+  librespot_player1_set_repeat:
+    alias: "librespot player1 set repeat mode"
+    fields:
+      value:
+        selector:
+          text:
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ value == 'all' }}"
+            sequence:
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/track"
+                  payload: "false"
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/context"
+                  payload: "true"
+          - conditions:
+              - condition: template
+                value_template: "{{ value == 'one' }}"
+            sequence:
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/context"
+                  payload: "false"
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/track"
+                  payload: "true"
+          - conditions:
+              - condition: template
+                value_template: "{{ value == 'off' }}"
+            sequence:
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/context"
+                  payload: "false"
+              - service: mqtt.publish
+                data:
+                  topic: "librespot/player1/action/repeat/track"
+                  payload: "false"
+
+media_player:
+  - platform: template_media_player
+    name: Librespot Player 1
+    entity_id: librespot_player1
+    unique_id: librespot_player1
+    # state: >
+    #   {{ states('sensor.librespot_player1_state') }}
+    state: >
+      {% if is_state('sensor.librespot_player1_state', 'stopped') %}
+        standby
+      {% else %}
+        {{ states('sensor.librespot_player1_state') }}
+      {% endif %}
+    volume:
+      state: >
+        {{ float(states('sensor.librespot_player1_volume')) / float(states('sensor.librespot_player1_volume_steps')) }}
+      set:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/volume
+          payload: >
+            {{ int(volume_level * 100) }}
+      step_up:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/volume
+          payload: >
+            {{ int((state_attr('media_player.librespot_player1', 'volume_level') + 0.05) * 100) }}
+      step_down:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/volume
+          payload: >
+            {{ int((state_attr('media_player.librespot_player1', 'volume_level') - 0.05) * 100) }}
+    controls:
+      play:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/resume
+      pause:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/pause
+      previous_track:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/prev
+      next_track:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/next
+    media:
+      title: >
+        {{ state_attr('sensor.librespot_player1_track', 'name') }}
+      image_url: >
+        {{ state_attr('sensor.librespot_player1_track', 'album_cover_url') }}
+      artist: >
+        {{ state_attr('sensor.librespot_player1_track', 'artist_names') | join(', ') }}
+      album_name: >
+        {{ state_attr('sensor.librespot_player1_track', 'album_name') }}
+      track: >
+        {{ state_attr('sensor.librespot_player1_track', 'track_number') }}
+      content_id: >
+        {{ states('sensor.librespot_player1_uri') }}
+      content_type: music
+      duration: >
+        {{ int(state_attr('sensor.librespot_player1_track', 'duration') // 1000) }}
+    position:
+      state: >
+        {{ float(states('sensor.librespot_player1_position')) / 1000 }}
+      updated_at: >
+        {{ states('sensor.librespot_player1_position_updated_at') }}
+      set:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/seek
+          payload: >
+            {{ int(position * 1000) }}
+    shuffle:
+      state: >
+        {% if is_state('sensor.librespot_player1_shuffle_context', 'true') %}
+          true
+        {% else %}
+          false
+        {% endif %}
+      set:
+        action: mqtt.publish
+        data:
+          topic: librespot/player1/action/shuffle/context
+          payload: >
+            {{ 'true' if shuffle else 'false' }}
+    repeat:
+      state: >
+        {% if is_state('sensor.librespot_player1_repeat_context', 'true') %}
+          all
+        {% elif is_state('sensor.librespot_player1_repeat_track', 'true') %}
+          one
+        {% else %}
+          off
+        {% endif %}
+      set:
+        action: script.librespot_player1_set_repeat
+        data:
+          value: "{{ repeat }}"
+    browse_media_entity: "media_player.spotify_tarik02"
+    play_media:
+      action: mqtt.publish
+      data:
+        topic: librespot/player1/action/play
+        payload: >
+          {{ { "uri": media_id } | tojson }}

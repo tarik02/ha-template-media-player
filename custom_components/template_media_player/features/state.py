@@ -40,7 +40,7 @@ class FeatureState(TemplateMediaPlayerBase):
         elif self._state == "standby":
             try:
                 return MediaPlayerState.STANDBY
-            except:
+            except AttributeError:
                 return MediaPlayerState.OFF
         elif self._state == "buffering":
             return MediaPlayerState.BUFFERING

@@ -3,30 +3,34 @@ from homeassistant.components.media_player import (
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
 )
-from homeassistant.helpers.typing import ConfigType
 from homeassistant.components.template.template_entity import TemplateEntity
 from homeassistant.const import (
     CONF_DEVICE_CLASS,
     CONF_ENTITY_ID,
     CONF_UNIQUE_ID,
 )
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import async_generate_entity_id
+from homeassistant.const import (
+    Platform,
+)
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.reload import async_setup_reload_service
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
+from .config import PLATFORM_SCHEMA
 from .features import (
-    FeatureState,
-    FeatureVolume,
+    FeatureBrowseMedia,
     FeatureControls,
     FeatureMedia,
+    FeaturePlayMedia,
     FeaturePosition,
     FeatureRepeat,
     FeatureShuffle,
-    FeatureBrowseMedia,
-    FeaturePlayMedia,
+    FeatureState,
+    FeatureVolume,
 )
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import async_generate_entity_id
 from .const import LOGGER
-
-from .config import PLATFORM_SCHEMA
 
 FEATURES = [
     FeatureState,
@@ -44,12 +48,24 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA
 DOMAIN = "template_media_player"
 
 
+async def async_setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    """Set up the custom universal media players."""
+    await async_setup_reload_service(hass, DOMAIN, [Platform.MEDIA_PLAYER])
+
+    player = TemplateMediaPlayer(hass, config)
+    async_add_entities([player])
+
+
 class TemplateMediaPlayer(TemplateEntity, *FEATURES, MediaPlayerEntity):
     def __init__(self, hass: HomeAssistant, config: ConfigType):
         super().__init__(
             hass,
             config=config,
-            fallback_name=config.get(CONF_ENTITY_ID),
             unique_id=config.get(CONF_UNIQUE_ID),
         )
 

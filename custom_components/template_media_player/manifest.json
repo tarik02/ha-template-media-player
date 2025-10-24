@@ -1,12 +1,16 @@
 {
-    "domain": "template_media_player",
-    "name": "Template Media Player",
-    "codeowners": ["@tarik02"],
-    "documentation": "https://github.com/tarik02/ha-template-media-player",
-    "issue_tracker": "https://github.com/tarik02/ha-template-media-player/issues",
-    "requirements": [],
-    "dependencies": [],
-    "after_dependencies": ["template"],
-    "iot_class": "local_push",
-    "version": "0.0.0-unreleased"
-  }
+  "after_dependencies": [
+    "template"
+  ],
+  "codeowners": [
+    "@tarik02"
+  ],
+  "dependencies": [],
+  "documentation": "https://github.com/tarik02/ha-template-media-player",
+  "domain": "template_media_player",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/tarik02/ha-template-media-player/issues",
+  "name": "Template Media Player",
+  "requirements": [],
+  "version": "0.0.0-unreleased"
+}

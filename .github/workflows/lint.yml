@@ -19,4 +19,4 @@ jobs:
         run: uv sync --locked --all-extras --dev
 
       - name: Run Linter
-        run: uv lint
+        run: uv check

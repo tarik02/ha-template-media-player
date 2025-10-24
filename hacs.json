@@ -1,0 +1,7 @@
+{
+  "name": "Template Media Player",
+  "homeassistant": "2025.10.3",
+  "render_readme": true,
+  "zip_release": true,
+  "filename": "template-media-player.zip"
+}

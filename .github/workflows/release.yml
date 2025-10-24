@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+
+      - name: Setup Mise
+        uses: jdx/mise-action@v3
+
+      - name: Bump manifest version
+        run: python scripts/bump_version ${{ github.ref_name }}
+
+      - name: Create zip package
+        working-directory: custom_components/template-media-player
+        run: zip -r template-media-player.zip .
+
+      - name: Upload zip to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: custom_components/template-media-player/template-media-player.zip
+          asset_name: template-media-player.zip
+          tag: ${{ github.ref }}
+          overwrite: true

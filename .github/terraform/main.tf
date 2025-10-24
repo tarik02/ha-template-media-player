@@ -3,6 +3,7 @@ provider "github" {
 
 resource "github_repository" "this" {
   name       = "ha-template-media-player"
+  description = "Home Assistant integration that provides fully-featured media player based on YAML templates."
   visibility = "private"
 
   has_downloads = true

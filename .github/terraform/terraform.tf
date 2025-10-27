@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket = "terraform-github.com-tarik02-ha-template-media-player"
-    region = "us-east-1"
+    region = "garage"
     key    = "tfstate"
     use_lockfile = true
     endpoints = {
@@ -16,5 +16,6 @@ terraform {
     }
     skip_credentials_validation = true
     skip_requesting_account_id  = true
+    skip_region_validation = true
   }
 }

@@ -44,4 +44,3 @@ The project is released under the MIT license. Read the [license](https://github
 [hacs-url]: https://github.com/hacs/integration
 [hacs-install-url]: https://my.home-assistant.io/redirect/hacs_repository/?owner=tarik02&repository=ha-template-media-player&category=integration
 [hacs-install-image]: https://my.home-assistant.io/badges/hacs_repository.svg
-
